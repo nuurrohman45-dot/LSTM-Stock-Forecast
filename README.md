@@ -331,7 +331,7 @@ The model uses the following technical indicators as input features:
 
 ### Training Configuration
 
-- **Optimizer**: Adam (lr=3e-4, weight_decay=1e-4)
+- **Optimizer**: AdamW (lr=3e-4, weight_decay=1e-4)
 - **Loss Function**: MSE (Mean Squared Error)
 - **Sequence Length**: 60 days
 - **Batch Size**: 32
@@ -427,3 +427,4 @@ The model is validated using walk-forward cross-validation to ensure:
 This project is for research and educational purposes only.
 It does not constitute financial advice.
 Trading financial instruments involves risk and may result in financial loss.
+
