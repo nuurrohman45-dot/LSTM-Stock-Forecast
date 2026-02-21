@@ -51,7 +51,7 @@ This project implements a machine learning pipeline for stock price prediction:
 │
 ├── notebooks/                 # Jupyter notebooks
 │   ├── EDA.ipynb              # Exploratory Data Analysis
-│   └── research.ipynb         # Research notebooks
+│   └── model_experiment.ipynb # Model experiment notebook
 │
 ├── tests/                     # Unit tests
 │   ├── __init__.py
@@ -281,4 +281,5 @@ The model is validated using walk-forward cross-validation to ensure:
 This project is for research and educational purposes only.
 It does not constitute financial advice.
 Trading financial instruments involves risk and may result in financial loss.
+
 
