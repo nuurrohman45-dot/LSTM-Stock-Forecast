@@ -260,6 +260,92 @@ with start_run("training"):
     log_metrics({"loss": 0.05, "accuracy": 0.95})
 ```
 
+## 🧠 Model Architecture
+
+The project uses an **LSTM with Temporal Attention** mechanism for stock price prediction. This architecture combines the sequential modeling power of LSTM with an attention mechanism that learns to focus on the most relevant time steps in the input sequence.
+
+### Model Components
+
+#### 1. LSTM Encoder
+- **Input**: Sequences of technical features (volatility, momentum, volume)
+- **Hidden Size**: 64 units
+- **Number of Layers**: 2
+- **Batch First**: True (input shape: batch × seq_len × features)
+
+#### 2. Temporal Attention Mechanism
+The attention mechanism learns to weight different time steps in the LSTM output:
+
+```
+Attention Score: s_t = W × h_t
+Attention Weight: α_t = softmax(s_t)
+Context Vector: c = Σ(α_t × h_t)
+```
+
+Where:
+- `h_t` is the LSTM hidden state at time step `t`
+- `W` is a learnable weight matrix
+- `α_t` represents the importance of each time step
+
+#### 3. Output Layer
+- Fully connected layer mapping from hidden size to single output
+- Produces the predicted next-day return
+
+### Architecture Diagram
+
+```
+Input Sequence (batch, seq_len, input_size)
+           ↓
+    ┌──────────────┐
+    │    LSTM      │  hidden_size=64, num_layers=2
+    │   Encoder    │
+    └──────────────┘
+           ↓
+   LSTM Output (batch, seq_len, 64)
+           ↓
+    ┌──────────────┐
+    │  Temporal   │  Learns attention weights
+    │  Attention  │
+    └──────────────┘
+           ↓
+   Context Vector (batch, 64)
+           ↓
+    ┌──────────────┐
+    │     FC      │  Linear(64, 1)
+    │    Layer    │
+    └──────────────┘
+           ↓
+   Prediction (batch, 1)
+```
+
+### Features Used
+
+The model uses the following technical indicators as input features:
+
+| Feature | Description |
+|---------|-------------|
+| `volatility_10` | 10-day rolling standard deviation of log returns |
+| `volatility_30` | 30-day rolling standard deviation of log returns |
+| `momentum_10` | 10-day price momentum (% change) |
+| `momentum_30` | 30-day price momentum (% change) |
+| `volume_z` | 30-day z-score of trading volume |
+
+### Training Configuration
+
+- **Optimizer**: Adam (lr=3e-4, weight_decay=1e-4)
+- **Loss Function**: MSE (Mean Squared Error)
+- **Sequence Length**: 60 days
+- **Batch Size**: 32
+- **Epochs**: 15
+
+### Why Attention?
+
+The Temporal Attention mechanism provides several benefits:
+
+1. **Interpretability**: Attention weights show which time steps the model focuses on
+2. **Variable Importance**: Automatically learns which historical patterns are most relevant
+3. **Gradient Flow**: Helps with gradient propagation in longer sequences
+4. **Adaptive Context**: Produces a dynamic context vector based on input
+
 ## 🔬 Methodology
 
 1. **Data Collection**: Historical stock data via yfinance
@@ -281,5 +367,3 @@ The model is validated using walk-forward cross-validation to ensure:
 This project is for research and educational purposes only.
 It does not constitute financial advice.
 Trading financial instruments involves risk and may result in financial loss.
-
-
