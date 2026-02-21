@@ -346,6 +346,66 @@ The Temporal Attention mechanism provides several benefits:
 3. **Gradient Flow**: Helps with gradient propagation in longer sequences
 4. **Adaptive Context**: Produces a dynamic context vector based on input
 
+## 🔄 Walk-Forward Validation
+
+The project uses **walk-forward cross-validation** to ensure robust and unbiased performance estimation. This approach mimics real-world trading by training on historical data and testing on future data in a rolling manner.
+
+### How Walk-Forward Validation Works
+
+- **Training Window**: 504 days (approximately 1.4 years)
+- **Testing Window**: 63 days (approximately 3 months)
+- **Trade Start**: 60 days (buffer to ensure enough data for features)
+
+The validation iterates through the data:
+1. Train model on 504 days of historical data
+2. Test on next 63 days
+3. Roll forward by 63 days and repeat
+4. Aggregate all test returns for final metrics
+
+### Key Components
+
+#### 1. Data Processing Pipeline
+Each walk-forward iteration:
+1. Feature Engineering: Calculate technical indicators
+2. Regime Detection: Identify market regimes
+3. Scaling: StandardScaler fit on training data only (no leakage)
+4. Sequence Creation: 60-day sliding window sequences
+
+#### 2. Position Sizing Pipeline
+1. Prediction Smoothing: 3-day rolling average
+2. Raw Signal: tanh(prediction / vol_target)
+3. Confidence Gating: Keep only top 60% predictions
+4. Volatility Targeting: Scale by (vol_target / realized_vol)
+5. Regime Filter: Zero position in unfavorable regimes
+6. Position Shift: Trade today to earn tomorrow
+
+#### 3. Risk Management
+- Volatility Targeting: 1% daily target volatility
+- Position Clipping: Max position size +-1
+- Transaction Costs: 5 bps per trade
+
+### Anti-Leakage Measures
+
+| Measure | Implementation |
+|---------|---------------|
+| No Future Data | All features use lagged values (shift(1)) |
+| Fit on Train Only | StandardScaler fitted only on training data |
+| Lagged Volatility | Realized vol from previous day, not current |
+| Regime Filtering | Regime status shifted by 1 day |
+| Position Alignment | Positions rolled by 1 day to match returns |
+
+### Performance Metrics
+
+The walk-forward validation produces:
+- Sharpe Ratio: Annualized return / std deviation
+- Maximum Drawdown: Largest peak-to-trough decline
+- Win Rate: Percentage of profitable days
+
+This approach ensures:
+- No look-ahead bias
+- Realistic performance estimation
+- Robust generalization to unseen data
+
 ## 🔬 Methodology
 
 1. **Data Collection**: Historical stock data via yfinance
