@@ -152,6 +152,7 @@ flask-cors      # CORS support
 plotly          # Interactive charts
 seaborn         # Statistical graphics
 statsmodels     # Statistical models
+pytest          # Testing app
 ```
 
 ## 🐳 Docker
@@ -280,3 +281,4 @@ The model is validated using walk-forward cross-validation to ensure:
 This project is for research and educational purposes only.
 It does not constitute financial advice.
 Trading financial instruments involves risk and may result in financial loss.
+
