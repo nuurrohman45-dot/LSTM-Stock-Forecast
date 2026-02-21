@@ -1,0 +1,14 @@
+numpy
+pandas
+matplotlib
+yfinance
+scikit-learn
+torch
+mlflow
+streamlit
+seaborn
+statsmodels
+flask
+flask-cors
+plotly
+pytest
